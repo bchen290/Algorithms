@@ -3,6 +3,7 @@ package testing.tictactoe;
 import optimization.minimax.MinimaxForTicTacToe;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -68,21 +69,22 @@ public class TicTacToe {
     }
 
     private Move humanMove() {
-        System.out.print("Enter your move as row (space) column: ");
+        System.out.print("Enter your move: ");
 
         while (true) {
             try {
-                String input = scanner.nextLine();
-                String[] inputSplit = input.split(" ");
-                Move move = new Move(Integer.parseInt(inputSplit[0]), Integer.parseInt(inputSplit[1]));
+                String inputString = scanner.nextLine();
+                int input = Integer.parseInt(inputString);
+                Move move = new Move(input / BOARD_SIZE, input % BOARD_SIZE);
 
                 if (!isSpotEmpty(move)) {
                     throw new SpotNotEmptyException();
                 }
 
                 return move;
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException | SpotNotEmptyException e) {
+            } catch (NumberFormatException | SpotNotEmptyException e) {
                 System.out.println("Invalid move! Please reenter your move as row (space) column");
+                e.printStackTrace();
             }
         }
     }
@@ -102,25 +104,18 @@ public class TicTacToe {
     }
 
     boolean isSpotEmpty(Move move) {
-        return board[move.getColumn()][move.getRow()] == ' ';
+        return board[move.getRow()][move.getColumn()] == ' ';
     }
 
     void printBoard() {
-        System.out.print("   ");
         for (int i = 0; i < BOARD_SIZE; i++) {
-            System.out.print(i);
-
-            if (i != BOARD_SIZE - 1) {
-                System.out.print(" | ");
-            }
-        }
-
-        System.out.println();
-
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            System.out.print(i + "  ");
+            System.out.print("  ");
             for (int j = 0; j < BOARD_SIZE; j++) {
-                System.out.print(board[i][j]);
+                if (board[i][j] == ' ') {
+                    System.out.print(i * BOARD_SIZE + j);
+                } else {
+                    System.out.print(board[i][j]);
+                }
 
                 if (j != BOARD_SIZE - 1) {
                     System.out.print(" | ");
@@ -129,7 +124,7 @@ public class TicTacToe {
             System.out.println();
 
             if (i != BOARD_SIZE - 1) {
-                System.out.println(" -------------");
+                System.out.println("-------------");
             }
         }
 
