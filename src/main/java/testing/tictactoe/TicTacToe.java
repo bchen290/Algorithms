@@ -8,7 +8,7 @@ public class TicTacToe {
     private final char[][] board;
     private Player player;
 
-    private Scanner scanner;
+    private final Scanner scanner;
 
     private boolean gameIsRunning;
 
@@ -58,11 +58,18 @@ public class TicTacToe {
     }
 
     private Move humanMove() {
-        System.out.print("Enter a row (space) column: ");
-        String input = scanner.nextLine();
-        String[] inputSplit = input.split(" ");
+        System.out.print("Enter your move as row (space) column: ");
 
-        return new Move(Integer.parseInt(inputSplit[0]), Integer.parseInt(inputSplit[1]));
+        while (true) {
+            try {
+                String input = scanner.nextLine();
+                String[] inputSplit = input.split(" ");
+
+                return new Move(Integer.parseInt(inputSplit[0]), Integer.parseInt(inputSplit[1]));
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                System.out.println("Invalid move! Please reenter your move as row (space) column");
+            }
+        }
     }
 
     private Move aiMove() {
