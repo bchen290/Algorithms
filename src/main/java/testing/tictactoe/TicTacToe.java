@@ -7,6 +7,9 @@ public class TicTacToe {
 
     private final char[][] board;
     private Player player;
+    private Move move;
+
+    private AIStrategy strategy;
 
     private final Scanner scanner;
 
@@ -15,6 +18,10 @@ public class TicTacToe {
     public TicTacToe() {
         board = new char[BOARD_SIZE][BOARD_SIZE];
         scanner = new Scanner(System.in);
+
+        move = new Move();
+
+        strategy = AIStrategy.MINIMAX;
     }
 
     public void startGame() {
@@ -73,15 +80,19 @@ public class TicTacToe {
     }
 
     private Move aiMove() {
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == ' ') {
-                    return new Move(i, j);
+        if (strategy == AIStrategy.BASIC) {
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                for (int j = 0; j < BOARD_SIZE; j++) {
+                    if (board[i][j] == ' ') {
+                        return move.setRow(i).setColumn(j);
+                    }
                 }
             }
+        } else if (strategy == AIStrategy.MINIMAX){
+            return move;
         }
 
-        return new Move(-1, -1);
+        return move;
     }
 
     private void playMove(Move move) {
@@ -168,9 +179,18 @@ enum Player {
     }
 }
 
+enum AIStrategy {
+    BASIC, MINIMAX
+}
+
 class Move {
-    private final int row;
-    private final int column;
+    private int row;
+    private int column;
+
+    Move() {
+        this.row = -1;
+        this.column = -1;
+    }
 
     Move(int row, int column) {
         this.row = row;
@@ -181,7 +201,17 @@ class Move {
         return row;
     }
 
+    public Move setRow(int row) {
+        this.row = row;
+        return this;
+    }
+
     public int getColumn() {
         return column;
+    }
+
+    public Move setColumn(int column) {
+        this.column = column;
+        return this;
     }
 }
