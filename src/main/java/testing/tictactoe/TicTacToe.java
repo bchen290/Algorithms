@@ -74,9 +74,14 @@ public class TicTacToe {
             try {
                 String input = scanner.nextLine();
                 String[] inputSplit = input.split(" ");
+                Move move = new Move(Integer.parseInt(inputSplit[0]), Integer.parseInt(inputSplit[1]));
 
-                return new Move(Integer.parseInt(inputSplit[0]), Integer.parseInt(inputSplit[1]));
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                if (!isSpotEmpty(move)) {
+                    throw new SpotNotEmptyException();
+                }
+
+                return move;
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException | SpotNotEmptyException e) {
                 System.out.println("Invalid move! Please reenter your move as row (space) column");
             }
         }
@@ -94,6 +99,10 @@ public class TicTacToe {
 
     private void playMove(Move move) {
         board[move.getRow()][move.getColumn()] = player.getToken();
+    }
+
+    boolean isSpotEmpty(Move move) {
+        return board[move.getColumn()][move.getRow()] == ' ';
     }
 
     void printBoard() {
@@ -200,4 +209,8 @@ public class TicTacToe {
 
 enum AIStrategy {
     BASIC, MINIMAX
+}
+
+class SpotNotEmptyException extends Exception {
+
 }
