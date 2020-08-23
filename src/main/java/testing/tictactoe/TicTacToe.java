@@ -1,15 +1,20 @@
 package testing.tictactoe;
 
+import optimization.minimax.MinimaxForTicTacToe;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToe {
     private static final int BOARD_SIZE = 3;
 
     private final char[][] board;
-    private Player player;
-    private Move move;
 
-    private AIStrategy strategy;
+    private Player player;
+    private static final Move move = new Move();
+
+    private final AIStrategy strategy;
 
     private final Scanner scanner;
 
@@ -18,8 +23,6 @@ public class TicTacToe {
     public TicTacToe() {
         board = new char[BOARD_SIZE][BOARD_SIZE];
         scanner = new Scanner(System.in);
-
-        move = new Move();
 
         strategy = AIStrategy.MINIMAX;
     }
@@ -51,11 +54,11 @@ public class TicTacToe {
             printBoard();
             playMove(player == Player.HUMAN ? humanMove() : aiMove());
 
-            if (hasWinner()) {
+            if (hasWinner(board)) {
                 printBoard();
                 System.out.println(player + " has won!");
                 gameIsRunning = false;
-            } else if (isBoardFull()) {
+            } else if (isBoardFull(board)) {
                 System.out.println("It's a tie!");
                 gameIsRunning = false;
             }
@@ -81,15 +84,9 @@ public class TicTacToe {
 
     private Move aiMove() {
         if (strategy == AIStrategy.BASIC) {
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                for (int j = 0; j < BOARD_SIZE; j++) {
-                    if (board[i][j] == ' ') {
-                        return move.setRow(i).setColumn(j);
-                    }
-                }
-            }
+            return getNextEmptySpace(board);
         } else if (strategy == AIStrategy.MINIMAX){
-            return move;
+            return MinimaxForTicTacToe.minimax(board, Integer.MAX_VALUE, true).getMove();
         }
 
         return move;
@@ -130,29 +127,35 @@ public class TicTacToe {
         System.out.println();
     }
 
-    public boolean hasWinner() {
+    public static Player checkWinner(char[][] board) {
         for (int i = 0; i < BOARD_SIZE; i++) {
-            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
-                return true;
+            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ') {
+                return board[i][0] == Player.HUMAN.getToken() ? Player.HUMAN : Player.COMPUTER;
+            }
         }
 
         for (int i = 0; i < BOARD_SIZE; i++) {
-            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ' )
-                return true;
+            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ' ) {
+                return board[0][i] == Player.HUMAN.getToken() ? Player.HUMAN : Player.COMPUTER;
+            }
         }
 
         if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
-            return true;
+            return board[0][0] == Player.HUMAN.getToken() ? Player.HUMAN : Player.COMPUTER;
         }
 
         if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
-            return true;
+            return board[0][2] == Player.HUMAN.getToken() ? Player.HUMAN : Player.COMPUTER;
         }
 
-        return false;
+        return null;
     }
 
-    public boolean isBoardFull() {
+    public static boolean hasWinner(char[][] board) {
+        return checkWinner(board) != null;
+    }
+
+    public static boolean isBoardFull(char[][] board) {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == ' ') {
@@ -163,55 +166,38 @@ public class TicTacToe {
 
         return true;
     }
-}
 
-enum Player {
-    HUMAN, COMPUTER;
-
-    private char token;
-
-    public char getToken() {
-        return token;
+    public static boolean isGameOver(char[][] board) {
+        return isBoardFull(board) || hasWinner(board);
     }
 
-    public void setToken(char token) {
-        this.token = token;
+    public static Move getNextEmptySpace(char[][] board) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == ' ') {
+                    return move.setRow(i).setColumn(j);
+                }
+            }
+        }
+
+        return move;
+    }
+
+    public static List<Move> getAllEmptySpace(char[][] board) {
+        List<Move> emptySpaces = new ArrayList<>();
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == ' ') {
+                    emptySpaces.add(new Move(i, j));
+                }
+            }
+        }
+
+        return emptySpaces;
     }
 }
 
 enum AIStrategy {
     BASIC, MINIMAX
-}
-
-class Move {
-    private int row;
-    private int column;
-
-    Move() {
-        this.row = -1;
-        this.column = -1;
-    }
-
-    Move(int row, int column) {
-        this.row = row;
-        this.column = column;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public Move setRow(int row) {
-        this.row = row;
-        return this;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-    public Move setColumn(int column) {
-        this.column = column;
-        return this;
-    }
 }
