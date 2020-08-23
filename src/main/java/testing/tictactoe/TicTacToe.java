@@ -13,7 +13,7 @@ public class TicTacToe {
     private final char[][] board;
 
     private Player player;
-    private static final Move move = new Move();
+    private static Move move = new Move();
 
     private final AIStrategy strategy;
 
@@ -91,10 +91,14 @@ public class TicTacToe {
 
     private Move aiMove() {
         if (strategy == AIStrategy.BASIC) {
-            return getNextEmptySpace(board);
+            move = getNextEmptySpace(board);
         } else if (strategy == AIStrategy.MINIMAX){
-            return MinimaxForTicTacToe.minimax(board, Integer.MAX_VALUE, true).getMove();
+            move = MinimaxForTicTacToe.minimax(board, Integer.MAX_VALUE, true).getMove();
+        } else if (strategy == AIStrategy.MINIMAX_WITH_ALPHA_BETA_PRUNING) {
+            move = MinimaxForTicTacToe.minimaxWithAlphaBetaPruning(board, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, true).getMove();
         }
+
+        System.out.println("Computer chose: " + (move.getRow() * BOARD_SIZE + move.getColumn()));
 
         return move;
     }
@@ -203,7 +207,7 @@ public class TicTacToe {
 }
 
 enum AIStrategy {
-    BASIC, MINIMAX
+    BASIC, MINIMAX, MINIMAX_WITH_ALPHA_BETA_PRUNING
 }
 
 class SpotNotEmptyException extends Exception {
