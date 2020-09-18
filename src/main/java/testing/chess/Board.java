@@ -7,7 +7,6 @@ public class Board {
 
     public Board() {
         board = new char[BOARD_SIZE][BOARD_SIZE];
-        resetBoard();
     }
 
     public void resetBoard() {
@@ -49,15 +48,55 @@ public class Board {
             // Places white pawn
             board[BOARD_SIZE - 2][i] = 'P';
         }
+
+        for (int i = 2; i < BOARD_SIZE - 2; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                board[i][j] = '-';
+            }
+        }
     }
 
     public void printBoard() {
+        System.out.print("   ");
+
         for(int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print((char)('a' + i) + " ");
+        }
+
+        System.out.println();
+
+        System.out.print("   ");
+
+        for(int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print("- ");
+        }
+
+        System.out.println();
+
+        for(int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print((i + 1) + "| ");
+
             for(int j = 0; j < BOARD_SIZE; j++) {
                 System.out.print(board[i][j] + " ");
             }
 
-            System.out.println();
+            System.out.println(" |" + (i + 1));
         }
+
+        System.out.print("   ");
+
+        for(int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print("- ");
+        }
+
+        System.out.println();
+
+        System.out.print("   ");
+
+        for(int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print((char)('a' + i) + " ");
+        }
+
+        System.out.println();
     }
 }
